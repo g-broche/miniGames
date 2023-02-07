@@ -1,0 +1,225 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    font-family: 'Lobster Two', cursive;
+    font-size: 110%;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 50px;
+}
+
+nav ul {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    gap: 20px;
+}
+
+.contentBloc {
+    height: 50vh;
+    padding: 20px 20px;
+    border: 1px solid orange;
+    gap: 20px;
+    background-color: rgb(50, 66, 206);
+    color: aliceblue;
+}
+
+#introContainer p {
+    width: 60%;
+}
+
+.gamewrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 100px;
+}
+
+.gameImageContainer {
+    width: 25%;
+}
+
+.gameImageContainer img {
+    object-fit: cover;
+    width: 100%;
+}
+
+#gameContainer>div:nth-child(2)>div.gameImageContainer {
+    order: 2;
+}
+
+.centered {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+#gameContainer .centered {
+    width: 40%;
+}
+
+p {
+    text-indent: 1em;
+}
+
+button {
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: none;
+    background-color: orange;
+    color: aliceblue;
+    font-weight: bold;
+    transition: transform 400ms, background-color 400ms, color 400ms, box-shadow 1000ms;
+}
+
+button:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 10px 5px rgb(65, 158, 235);
+    background-color: rgb(252, 193, 32);
+    color: black
+}
+
+button::after {
+    content: " →"
+}
+
+#gameContainer>p {
+    width: 50%;
+}
+
+#reviewContainer {
+    height: fit-content;
+}
+
+#reviewContainer>div {
+    width: 70%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    background-color: darkred;
+}
+
+#reviewContainer article {
+    padding: 15px 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    text-align: left;
+    align-items: center;
+}
+
+#reviewContainer article img {
+    width: 100px;
+    grid-row: 1/3;
+    justify-self: center;
+}
+
+@media only screen and (max-width:1200px) {
+
+    #introContainer p {
+        width: 60%;
+    }
+
+    #reviewContainer>div {
+        grid-template-columns: 1fr
+    }
+}
+
+@media only screen and (max-width:900px) {
+    #introContainer p {
+        width: 70%;
+    }
+
+    .contentBloc {
+        height: fit-content;
+        padding: 30px 20px;
+    }
+
+    .gamewrapper {
+        gap: 20px;
+    }
+
+    #gameContainer .centered {
+        width: 80%;
+    }
+
+    .gameImageContainer {
+        width: 50%;
+    }
+
+    .contentBloc .centered {
+        width: 60%;
+    }
+
+    #gameContainer>div:nth-child(2)>div.gameImageContainer {
+        order: 0;
+    }
+
+    #reviewContainer>div {
+        width: 80%;
+    }
+}
+
+@media only screen and (max-width:600px) {
+    body {
+        font-size: 90%;
+    }
+
+    header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    nav {
+        width: 100%;
+    }
+
+    nav ul {
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .contentBloc {
+        height: fit-content;
+        padding: 30px 20px;
+    }
+
+    .gameImageContainer {
+        width: 60%;
+    }
+
+    #gameContainer .centered {
+        width: 100%;
+    }
+
+    #reviewContainer>div {
+        width: 100%;
+    }
+
+    #reviewContainer article {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid black;
+    }
+
+    #reviewContainer article:last-child {
+        border-bottom: none;
+    }
+}
