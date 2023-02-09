@@ -1,3 +1,12 @@
+:root {
+    --pongBarHeight: 20px;
+    --pongBallDiameter: 6px;
+    --pongLoop: 30s;
+    --tictactoeLoop: 10s;
+    --chessLoop: 5s;
+    --421Loop: 5s;
+}
+
 * {
     padding: 0;
     margin: 0;
@@ -26,12 +35,16 @@ nav ul {
 }
 
 .contentBloc {
-    height: 50vh;
+    height: fit-content;
     padding: 20px 20px;
     border: 1px solid orange;
     gap: 20px;
     background-color: rgb(50, 66, 206);
     color: aliceblue;
+}
+
+#introContainer {
+    gap: 50px;
 }
 
 #introContainer p {
@@ -56,7 +69,7 @@ nav ul {
     width: 100%;
 }
 
-#gameContainer>div:nth-child(2)>div.gameImageContainer {
+#gameContainer>div:nth-child(even)>div.gameImageContainer {
     order: 2;
 }
 
@@ -101,6 +114,1038 @@ button::after {
     width: 50%;
 }
 
+.gamewrapper header {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.gamewrapper header div:nth-child(2) {
+    height: 100px;
+}
+
+#pongAnimate {
+    width: 50%;
+    position: relative;
+    margin-bottom: 30px;
+
+}
+
+#pongAnimate div:first-child,
+#pongAnimate div:last-child {
+    position: absolute;
+    width: 5px;
+    height: var(--pongBarHeight);
+    background-color: black;
+}
+
+#pongAnimate div:first-child {
+    animation: pongLeft 30s linear infinite;
+}
+
+#pongAnimate div:last-child {
+    right: 0px;
+    animation: pongRight 30s linear infinite;
+}
+
+#pongAnimate div:nth-child(2) {
+    position: absolute;
+    width: var(--pongBallDiameter);
+    height: var(--pongBallDiameter);
+    border-radius: 3px;
+    background-color: black;
+    top: 4px;
+    left: 100%;
+    animation: pongBall var(--pongLoop) linear infinite;
+}
+
+@keyframes pongLeft {
+    0% {
+        top: 0%;
+        left: 0%;
+        opacity: 1;
+    }
+
+    5% {
+        top: calc(75% - var(--pongBarHeight)/2 - 5px);
+    }
+
+    8% {
+        top: calc(50% - var(--pongBarHeight)/2 - 5px);
+    }
+
+    14% {
+        top: calc(90% - var(--pongBarHeight)/2 - 5px);
+    }
+
+    16% {
+        top: calc(70% - var(--pongBarHeight)/2);
+    }
+
+    21% {
+        top: calc(90% - var(--pongBarHeight)/2 - 5px);
+    }
+
+    25% {
+        top: calc(40% - var(--pongBarHeight)/2);
+    }
+
+    27% {
+        top: calc(60% - var(--pongBarHeight)/2);
+    }
+
+    32% {
+        top: calc(10% - var(--pongBarHeight)/2);
+    }
+
+    34% {
+        top: calc(30% - var(--pongBarHeight)/2);
+    }
+
+    38% {
+        opacity: 1;
+    }
+
+    39% {
+        top: calc(10% - var(--pongBarHeight)/2);
+        opacity: 0
+    }
+
+    44% {
+        top: 0%;
+        opacity: 0;
+    }
+
+    45% {
+        top: 0%;
+        opacity: 1;
+    }
+
+    50% {
+        top: 0%;
+        opacity: 1;
+    }
+
+    64% {
+        top: calc(25% - var(--pongBarHeight)/2);
+    }
+
+    66% {
+        top: calc(30% - var(--pongBarHeight)/2);
+    }
+
+    75% {
+        top: calc(85% - var(--pongBarHeight)/2);
+    }
+
+    77% {
+        top: calc(75% - var(--pongBarHeight)/2);
+    }
+
+    84% {
+        top: calc(35% - var(--pongBarHeight)/2);
+    }
+
+    88% {
+        opacity: 1
+    }
+
+    89% {
+        top: calc(35% - var(--pongBarHeight)/2);
+        opacity: 0
+    }
+
+    100% {
+        top: 0%;
+        left: 0%;
+        opacity: 0
+    }
+}
+
+@keyframes pongBall {
+    0% {
+        top: var(--pongBallDiameter);
+        left: 5px;
+        opacity: 1;
+    }
+
+    9% {
+        top: 60%;
+        left: calc(100% - 10px);
+
+    }
+
+    16% {
+        top: 70%;
+        left: 5px;
+    }
+
+    22% {
+        top: 30%;
+        left: calc(100% - 10px);
+    }
+
+    27% {
+        top: 60%;
+        left: 5px;
+    }
+
+    31% {
+        top: 85%;
+        left: calc(100% - 10px);
+    }
+
+    34% {
+        top: 30%;
+        left: 5px;
+    }
+
+    36% {
+        top: 5%;
+        left: calc(100% - 10px);
+    }
+
+    36.2% {
+        top: calc(0% - var(--pongBallDiameter)/2);
+        left: 90%;
+        opacity: 1
+    }
+
+    38% {
+        top: 0%;
+        left: 90%;
+        opacity: 0
+    }
+
+    44% {
+        top: var(--pongBallDiameter);
+        left: 5px;
+        opacity: 0;
+    }
+
+    45% {
+        top: var(--pongBallDiameter);
+        left: 5px;
+        opacity: 1;
+    }
+
+    50% {
+        top: var(--pongBallDiameter);
+        left: 5px;
+        opacity: 1;
+    }
+
+    59% {
+        top: 60%;
+        left: calc(100% - 10px);
+
+    }
+
+    66% {
+        top: 30%;
+        left: 5px;
+    }
+
+    72% {
+        top: 35%;
+        left: calc(100% - 10px);
+    }
+
+    77% {
+        top: 75%;
+        left: 5px;
+    }
+
+    81% {
+        top: 65%;
+        left: calc(100% - 10px);
+    }
+
+    84% {
+        top: 35%;
+        left: 5px;
+    }
+
+    86% {
+        top: 70%;
+        left: calc(100% - 10px);
+    }
+
+    87% {
+        top: calc(0% - var(--pongBallDiameter)/2);
+        left: 40%;
+        opacity: 1
+    }
+
+    89% {
+        top: calc(0% - var(--pongBallDiameter)/2);
+        left: 40%;
+        opacity: 0
+    }
+
+    100% {
+        top: var(--pongBallDiameter);
+        left: 5px;
+        opacity: 0;
+    }
+}
+
+@keyframes pongRight {
+    0% {
+        top: calc(100% - var(--pongBarHeight));
+        opacity: 1
+    }
+
+    9% {
+        top: calc(60% - var(--pongBarHeight)/2);
+    }
+
+    19% {
+        top: calc(20% - var(--pongBarHeight)/2);
+    }
+
+    22% {
+        top: calc(30% - var(--pongBarHeight)/2);
+    }
+
+    31% {
+        top: calc(90% - var(--pongBarHeight)/2 - 5px);
+    }
+
+    36% {
+        top: calc(5% - var(--pongBarHeight)/2 + 5px);
+    }
+
+    38% {
+        opacity: 1;
+    }
+
+    39% {
+        top: calc(5% - var(--pongBarHeight)/2 + 5px);
+        opacity: 0;
+    }
+
+    43% {
+        top: calc(100% - var(--pongBarHeight));
+        opacity: 0;
+    }
+
+    44% {
+        top: calc(100% - var(--pongBarHeight));
+        opacity: 1;
+    }
+
+    50% {
+        top: calc(100% - var(--pongBarHeight));
+        opacity: 1;
+    }
+
+    57% {
+        top: calc(75% - var(--pongBarHeight)/2);
+    }
+
+    59% {
+        top: calc(60% - var(--pongBarHeight)/2);
+    }
+
+    70% {
+        top: calc(20% - var(--pongBarHeight)/2);
+    }
+
+    72% {
+        top: calc(35% - var(--pongBarHeight)/2);
+    }
+
+    81% {
+        top: calc(65% - var(--pongBarHeight)/2);
+    }
+
+    85% {
+        top: calc(85% - var(--pongBarHeight)/2 + 5px);
+    }
+
+    86% {
+        top: calc(70%);
+
+    }
+
+    88% {
+        opacity: 1
+    }
+
+    89% {
+        opacity: 0
+    }
+
+    90% {
+        top: calc(70%);
+        opacity: 0
+    }
+
+    91% {
+        top: calc(100% - var(--pongBarHeight));
+        opacity: 0
+    }
+
+    100% {
+        top: calc(100% - var(--pongBarHeight));
+        opacity: 0
+    }
+
+}
+
+#gameChessAnimate {
+    width: 50%;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+#gameChessAnimate div {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+}
+
+#gameChessAnimate div img {
+    object-fit: cover;
+    width: 100%;
+}
+
+#gameChessAnimate div:first-child {
+    left: 0%;
+    animation: moveKnight var(--chessLoop) linear infinite
+}
+
+#gameChessAnimate div:nth-child(2) {
+    left: 30%;
+    animation: movePawn var(--chessLoop) linear infinite;
+}
+
+#gameChessAnimate div:last-child {
+    left: 70%;
+    animation: moveKing var(--chessLoop) linear infinite;
+}
+
+@keyframes moveKnight {
+    15% {
+
+        left: 0;
+    }
+
+    30% {
+        left: 20%;
+        transform: rotate(0deg);
+    }
+
+    35% {
+        left: 20%;
+        transform: rotate(30deg);
+    }
+
+    40% {
+        left: 20%;
+        transform: rotate(0deg);
+    }
+
+    60% {
+        left: 62%;
+        transform: rotate(0deg);
+    }
+
+    65% {
+        transform: rotate(30deg);
+    }
+
+    70% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        left: 62%;
+    }
+}
+
+@keyframes movePawn {
+    0% {
+        left: 30%
+    }
+
+    35% {
+        left: 30%;
+        top: 50%;
+        transform: rotate(0deg);
+    }
+
+    55% {
+        left: 45%;
+        top: 35%;
+        transform: rotate(405deg);
+        opacity: 1;
+    }
+
+    56% {
+        opacity: 0;
+    }
+
+    59% {
+        opacity: 0;
+    }
+
+    62% {
+        opacity: 1;
+    }
+
+    66% {
+        opacity: 0;
+    }
+
+    70% {
+        opacity: 1;
+    }
+
+    75% {
+        left: 60%;
+        top: 58%;
+        transform: rotate(810deg);
+    }
+
+    76% {
+        opacity: 1;
+    }
+
+    82% {
+        opacity: 0;
+    }
+
+    88% {
+        opacity: 1;
+    }
+
+    98% {
+        opacity: 0;
+    }
+
+    100% {
+        left: 60%;
+        top: 58%;
+        transform: rotate(810deg);
+        opacity: 0;
+    }
+}
+
+@keyframes moveKing {
+    65% {
+        left: 70%;
+        top: 50%;
+        rotate: 0deg;
+        transform: scale(1);
+    }
+
+    80% {
+        left: 85%;
+        top: 35%;
+        rotate: 405deg;
+        opacity: 1;
+    }
+
+    100% {
+        left: 100%;
+        top: 56%;
+        rotate: 810deg;
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+#tictactoeAnimate {
+    display: grid;
+    grid-template-columns: 20px 20px 20px;
+    grid-template-rows: 20px 20px 20px;
+    gap: 2px;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: darkblue;
+}
+
+#tictactoeAnimate>div {
+    background-color: rgb(50, 66, 206);
+    width: 100%;
+    height: 100%;
+    padding-bottom: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#tictactoeAnimate div:first-child::after {
+    content: "\00a0";
+    animation: tictactoe1-1 var(--tictactoeLoop) infinite;
+}
+
+#tictactoeAnimate div:nth-child(2)::after {
+    content: '\00a0';
+    animation: tictactoe1-2 var(--tictactoeLoop) infinite;
+}
+
+#tictactoeAnimate div:nth-child(3)::after {
+    content: "\00a0";
+    animation: tictactoe1-3 var(--tictactoeLoop) infinite;
+}
+
+#tictactoeAnimate div:nth-child(4)::after {
+    content: '\00a0';
+    animation: tictactoe2-1 var(--tictactoeLoop) infinite;
+}
+
+#tictactoeAnimate div:nth-child(5)::after {
+    content: '\00a0';
+    animation: tictactoe2-2 var(--tictactoeLoop) infinite;
+}
+
+#tictactoeAnimate div:nth-child(7)::after {
+    content: '\00a0';
+    animation: tictactoe3-1 var(--tictactoeLoop) infinite;
+}
+
+#tictactoeAnimate div:nth-child(9)::after {
+    content: '\00a0';
+    animation: tictactoe3-3 var(--tictactoeLoop) infinite;
+}
+
+@keyframes tictactoe1-1 {
+    0% {
+        content: "\00a0";
+    }
+
+    4% {
+        content: "\00a0";
+    }
+
+    5% {
+        content: "\2613";
+    }
+
+    100% {
+        content: "\2613";
+
+    }
+}
+
+@keyframes tictactoe1-2 {
+    0% {
+        content: '\00a0';
+    }
+
+    49% {
+        content: '\00a0';
+    }
+
+    50% {
+        content: '\25CB';
+    }
+
+    100% {
+        content: '\25CB';
+    }
+
+}
+
+@keyframes tictactoe1-3 {
+    0% {
+        content: "\00a0";
+    }
+
+    34% {
+        content: "\00a0";
+    }
+
+    35% {
+        content: "\2613";
+    }
+
+    100% {
+        content: "\2613";
+    }
+
+}
+
+@keyframes tictactoe2-1 {
+    0% {
+        content: '\00a0';
+    }
+
+    19% {
+        content: '\00a0';
+    }
+
+    20% {
+        content: '\25CB';
+    }
+
+    100% {
+        content: '\25CB';
+    }
+
+}
+
+@keyframes tictactoe2-2 {
+    0% {
+        content: '\00a0';
+    }
+
+    64% {
+        content: '\00a0';
+    }
+
+    65% {
+        content: '\2613';
+    }
+
+    100% {
+        content: '\2613';
+    }
+
+}
+
+
+@keyframes tictactoe3-1 {
+    0% {
+        content: '\00a0';
+    }
+
+    94% {
+        content: '\00a0';
+    }
+
+    95% {
+        content: '\2613';
+    }
+
+    100% {
+        content: '\2613';
+    }
+
+}
+
+@keyframes tictactoe3-3 {
+    0% {
+        content: '\00a0';
+    }
+
+    79% {
+        content: '\00a0';
+    }
+
+    80% {
+        content: '\25CB';
+    }
+
+    100% {
+        content: '\25CB';
+    }
+
+}
+
+#game421Animate {
+    width: 50%;
+    height: 100px;
+    position: relative;
+    margin-bottom: 30px;
+
+}
+
+#game421Animate img {
+    width: 30px;
+    height: 30px;
+}
+
+#game421Animate :first-child {
+    z-index: 2;
+    top: 0px;
+    right: 0px;
+    position: absolute;
+    animation: dice4Motion var(--421Loop) linear infinite;
+}
+
+#game421Animate :nth-child(2) {
+    z-index: 1;
+    top: 35%;
+    right: 0px;
+    position: absolute;
+    animation: dice2Motion var(--421Loop) linear infinite;
+}
+
+#game421Animate :nth-child(3) {
+    z-index: 0;
+    top: 5%;
+    right: 0px;
+    position: absolute;
+    animation: dice1Motion var(--421Loop) linear infinite;
+}
+
+@keyframes dice4Motion {
+    0% {
+        right: 0px;
+        top: 20%;
+        transform: rotate(0deg);
+    }
+
+    5% {
+        right: 5%;
+        top: 8%;
+        transform: rotate(-40deg);
+    }
+
+    10% {
+        right: 10%;
+        top: 0%;
+        transform: rotate(-60deg)
+    }
+
+    15% {
+        right: 15%;
+        top: 8%;
+        transform: rotate(-80deg)
+    }
+
+    20% {
+        right: 20%;
+        top: 20%;
+        transform: rotate(-120deg);
+    }
+
+    30% {
+        right: 30%;
+        top: 37%;
+        transform: rotate(-210deg);
+    }
+
+    40% {
+        right: 40%;
+        top: 62%;
+        transform: rotate(-300deg);
+    }
+
+    50% {
+        right: 50%;
+        top: 100%;
+        transform: rotate(-410deg);
+    }
+
+    60% {
+        right: 60%;
+        top: 80%;
+        transform: rotate(-460deg);
+    }
+
+    70% {
+        right: 70%;
+        top: 70%;
+        transform: rotate(-495deg);
+    }
+
+    80% {
+        right: 80%;
+        top: 83%;
+        transform: rotate(-530deg);
+    }
+
+    90% {
+        right: 90%;
+        top: 100%;
+        transform: rotate(-570deg);
+    }
+
+    100% {
+        right: 100%;
+        top: 95%;
+        transform: rotate(-610deg);
+    }
+}
+
+@keyframes dice2Motion {
+    0% {
+        right: 0px;
+        top: 45%;
+        transform: rotate(0deg);
+    }
+
+    5% {
+        right: 5%;
+        top: 38%;
+        transform: rotate(-40deg);
+    }
+
+    10% {
+        right: 10%;
+        top: 35%;
+        transform: rotate(-60deg)
+    }
+
+    15% {
+        right: 15%;
+        top: 38%;
+        transform: rotate(-80deg)
+    }
+
+    20% {
+        right: 20%;
+        top: 45%;
+        transform: rotate(-120deg);
+    }
+
+    30% {
+        right: 30%;
+        top: 68%;
+        transform: rotate(-210deg);
+    }
+
+    40% {
+        right: 40%;
+        top: 95%;
+        transform: rotate(-300deg);
+    }
+
+    42% {
+        right: 42%;
+        top: 100%;
+        transform: rotate(-325deg);
+    }
+
+    50% {
+        right: 50%;
+        top: 87%;
+        transform: rotate(-381deg);
+    }
+
+    60% {
+        right: 60%;
+        top: 74%;
+        transform: rotate(-431deg);
+    }
+
+    70% {
+        right: 70%;
+        top: 87%;
+        transform: rotate(-491deg);
+    }
+
+    74% {
+        right: 74%;
+        top: 100%;
+        transform: rotate(-519deg);
+    }
+
+    80% {
+        right: 80%;
+        top: 92%;
+        transform: rotate(-543deg);
+    }
+
+    90% {
+        right: 90%;
+        top: 87%;
+        transform: rotate(-563deg);
+    }
+
+    100% {
+        right: 100%;
+        top: 92%;
+        transform: rotate(-593deg);
+    }
+}
+
+@keyframes dice1Motion {
+    0% {
+        right: 0px;
+        top: 5%;
+        transform: rotate(0deg);
+    }
+
+    10% {
+        right: 10%;
+        top: 25%;
+        transform: rotate(-40deg)
+    }
+
+    20% {
+        right: 20%;
+        top: 60%;
+        transform: rotate(-100deg);
+    }
+
+    28% {
+        right: 28%;
+        top: 100%;
+        transform: rotate(-180deg);
+    }
+
+    30% {
+        right: 30%;
+        top: 92%;
+        transform: rotate(-194deg);
+    }
+
+    40% {
+        right: 40%;
+        top: 70%;
+        transform: rotate(-254deg);
+    }
+
+    50% {
+        right: 50%;
+        top: 62%;
+        transform: rotate(-294deg);
+    }
+
+    60% {
+        right: 60%;
+        top: 70%;
+        transform: rotate(-344deg);
+    }
+
+    70% {
+        right: 70%;
+        top: 100%;
+        transform: rotate(-404deg);
+    }
+
+    75% {
+        right: 75%;
+        top: 90%;
+        transform: rotate(-424deg);
+    }
+
+    80% {
+        right: 80%;
+        top: 88%;
+        transform: rotate(-441deg);
+    }
+
+    85% {
+        right: 85%;
+        top: 90%;
+        transform: rotate(-461deg);
+    }
+
+    90% {
+        right: 90%;
+        top: 100%;
+        transform: rotate(-491deg);
+    }
+
+    100% {
+        right: 100%;
+        top: 96%;
+        transform: rotate(-531deg);
+    }
+}
+
 #reviewContainer {
     height: fit-content;
 }
@@ -128,6 +1173,8 @@ button::after {
     justify-self: center;
 }
 
+
+
 @media only screen and (max-width:1200px) {
 
     #introContainer p {
@@ -140,6 +1187,10 @@ button::after {
 }
 
 @media only screen and (max-width:900px) {
+    #introContainer {
+        gap: 20px;
+    }
+
     #introContainer p {
         width: 70%;
     }
@@ -200,6 +1251,16 @@ button::after {
 
     .gameImageContainer {
         width: 60%;
+    }
+
+    #gameChessAnimate div {
+        width: 24px;
+        height: 24px
+    }
+
+    #game421Animate img {
+        width: 20px;
+        height: 20px;
     }
 
     #gameContainer .centered {
