@@ -1,5 +1,24 @@
 "use strict"
 
+
+const increment = 2;
+
+const keyPlayer1Up = "KeyW";
+const keyPlayer1Down = "KeyS";
+const keyPlayer2Up = "ArrowUp";
+const keyPlayer2Down = "ArrowDown";
+const pause = "Space";
+
+const defaultBarHeight = 100;
+const minBarHeight = 20;
+const defaultBarWidth = 20;
+
+let isInitialTurn = true;
+let gameEnded = false;
+
+let requestAnimationId;
+let isPaused = false;
+
 const GameWindow = {
     elem: document.getElementById("pongGameWindow"),
     width: document.getElementById("pongGameWindow").offsetWidth,
@@ -16,46 +35,67 @@ const Score = {
 Score.display = function () {
     this.player1Field.textContent = this.player1Points;
     this.player2Field.textContent = this.player2Points;
-}
+};
 
 // add point to score based on boolean, if true player one has won, else player 2 has won
 Score.update = function (winnerBool) {
     (winnerBool ? this.player1Points++ : this.player2Points++);
     this.display();
-}
+};
 Score.reset = function () {
     this.player1Points = 0;
     this.player2Points = 0;
     this.display();
-}
+};
 
-const LeftBar = {
+const bar = {
+    setInitialValues({ elem, width, height, defaultPositionY, topPosition }) {
+        this.elem = elem;
+        this.width = width;
+        this.height = height;
+        this.defaultPositionY = defaultPositionY;
+        this.topPosition = topPosition;
+    },
+    resetPosition() {
+        this.defaultPositionY = (GameWindow.height / 2) - (this.height / 2)
+        this.topPosition = this.defaultPositionY;
+        this.elem.style.top = this.defaultPositionY + "px";
+    },
+    fullReset() {
+        this.height = defaultBarHeight;
+        this.width = defaultBarWidth;
+        this.defaultPositionY = (GameWindow.height / 2) - (defaultBarHeight / 2);
+        this.topPosition = this.defaultPositionY;
+        this.elem.style.top = this.defaultPositionY + "px";
+    },
+
+    increaseHeight(value) {
+        this.height = (this.height + (this.height / 100 * value) < defaultBarHeight ? this.height + (this.height / 100 * value) : defaultBarHeight);
+        this.elem.style.height = this.height + "px";
+    },
+    reduceHeight(value) {
+        this.height = (this.height - (this.height / 100 * value) > minBarHeight ? this.height - (this.height / 100 * value) : minBarHeight);
+        this.elem.style.height = this.height + "px";
+    }
+};
+
+const LeftBar = Object.create(bar);
+LeftBar.setInitialValues({
     elem: document.getElementById("leftBar"),
-    width: document.getElementById("leftBar").offsetWidth,
-    height: document.getElementById("leftBar").offsetHeight,
-    defaultPositionY: (GameWindow.height / 2) - (document.getElementById("leftBar").offsetHeight / 2),
-    topPosition: (GameWindow.height / 2) - (document.getElementById("leftBar").offsetHeight / 2),
+    width: defaultBarWidth,
+    height: defaultBarHeight,
+    defaultPositionY: (GameWindow.height / 2) - (defaultBarHeight / 2),
+    topPosition: (GameWindow.height / 2) - (defaultBarHeight / 2),
+});
 
-};
-
-LeftBar.reset = function () {
-    this.topPosition = this.defaultPositionY;
-    this.elem.style.top = this.defaultPositionY + "px";
-}
-
-const RightBar = {
+const RightBar = Object.create(bar);
+RightBar.setInitialValues({
     elem: document.getElementById("rightBar"),
-    width: document.getElementById("rightBar").offsetWidth,
-    height: document.getElementById("rightBar").offsetHeight,
-    defaultPositionY: (GameWindow.height / 2) - (document.getElementById("rightBar").offsetHeight / 2),
-    topPosition: (GameWindow.height / 2) - (document.getElementById("rightBar").offsetHeight / 2),
-
-};
-
-RightBar.reset = function () {
-    this.topPosition = this.defaultPositionY;
-    this.elem.style.top = this.defaultPositionY + "px";
-}
+    width: defaultBarWidth,
+    height: defaultBarHeight,
+    defaultPositionY: (GameWindow.height / 2) - (defaultBarHeight / 2),
+    topPosition: (GameWindow.height / 2) - (defaultBarHeight / 2),
+});
 
 const Ball = {
     elem: document.querySelector("i"),
@@ -64,8 +104,8 @@ const Ball = {
     centerY: (GameWindow.height / 2),
     centerX: (GameWindow.width / 2),
     radius: document.querySelector("i").offsetWidth / 2,
-    directionX: false, //true => left to right ; false => right to left
-    directionY: true, //true => downward ; false => upward
+    directionX: false,
+    directionY: true,
     velocity: 5
 };
 
@@ -81,38 +121,26 @@ Ball.toggleDirectionY = function () {
     this.directionY = (this.directionY ? false : true);
 }
 
-const increment = 2;
-
-const keyPlayer1Up = "KeyW";
-const keyPlayer1Down = "KeyS";
-const keyPlayer2Up = "ArrowUp";
-const keyPlayer2Down = "ArrowDown";
-const pause = "Space";
-
-let isInitialTurn = true;
-let gameEnded = false;
-
-let requestAnimationId;
-let isPaused = false;
 
 /* ***** BAR MOVEMENT ***** */
 
 document.addEventListener("keydown", function (event) {
     let barMovementValue = GameWindow.height / 100 * increment;
 
+
     switch (event.code) {
 
         case keyPlayer1Up:
-            moveUp(LeftBar, -barMovementValue);
+            if (!isPaused) { moveUp(LeftBar, -barMovementValue) };
             break;
         case keyPlayer1Down:
-            moveDown(LeftBar, barMovementValue);
+            if (!isPaused) { moveDown(LeftBar, barMovementValue) };
             break;
         case keyPlayer2Up:
-            moveUp(RightBar, -barMovementValue);
+            if (!isPaused) { moveUp(RightBar, -barMovementValue) };
             break;
         case keyPlayer2Down:
-            moveDown(RightBar, barMovementValue);
+            if (!isPaused) { moveDown(RightBar, barMovementValue) };
             break;
         case pause:
             pauseGame();
@@ -121,13 +149,6 @@ document.addEventListener("keydown", function (event) {
             break;
     }
 });
-
-function resetBars() {
-    LeftBar.topPosition = LeftBar.defaultPositionY;
-    LeftBar.elem.style.top = LeftBar.defaultPositionY + "px";
-    RightBar.topPosition = RightBar.defaultPositionY;
-    RightBar.elem.style.top = RightBar.defaultPositionY + "px";
-}
 
 function moveUp(bar, value) {
     if (canBarMoveUp(bar, value)) {
@@ -185,14 +206,14 @@ function displayBallMovement() {
 
 
 function willBallHitRightBar(moveValueX, moveValueY) {
-    if ((Ball.centerX + Ball.radius + moveValueX >= RightBar.elem.offsetLeft) && (Ball.centerY + Ball.radius + moveValueY >= RightBar.topPosition) && (Ball.centerY - Ball.radius + moveValueY <= RightBar.topPosition + RightBar.height)) {
+    if ((Ball.centerX + Ball.radius + moveValueX >= RightBar.elem.offsetLeft) && (Ball.centerX + Ball.radius + moveValueX <= RightBar.elem.offsetLeft + RightBar.width) && (Ball.centerY + Ball.radius + moveValueY >= RightBar.topPosition) && (Ball.centerY - Ball.radius + moveValueY <= RightBar.topPosition + RightBar.height)) {
         return true;
     } else {
         return false;
     }
 }
 function willBallHitLeftBar(moveValueX, moveValueY) {
-    if ((Ball.centerX - Ball.radius + moveValueX <= LeftBar.elem.offsetLeft + LeftBar.width) && (Ball.centerY + Ball.radius + moveValueY >= LeftBar.topPosition) && (Ball.centerY - Ball.radius + moveValueY <= LeftBar.topPosition + RightBar.height)) {
+    if ((Ball.centerX - Ball.radius + moveValueX <= LeftBar.elem.offsetLeft + LeftBar.width) && (Ball.centerX - Ball.radius + moveValueX >= LeftBar.elem.offsetLeft) && (Ball.centerY + Ball.radius + moveValueY >= LeftBar.topPosition) && (Ball.centerY - Ball.radius + moveValueY <= LeftBar.topPosition + LeftBar.height)) {
         return true;
     } else {
         return false;
@@ -220,8 +241,8 @@ function closeDistanceToBar() {
     }
     changeBallCoords(distanceToReach)
     displayBallMovement();
-    //return distanceToReach;
-    return 3;
+    distanceToReach;
+
 }
 
 function willBallHitAnyWall(moveValueY) {
@@ -287,8 +308,8 @@ function pauseGame() {
 }
 
 function startRound() {
-    LeftBar.reset();
-    RightBar.reset();
+    LeftBar.resetPosition();
+    RightBar.resetPosition();
     Ball.reset();
     Ball.toggleDirectionX();
     isInitialTurn = true;
@@ -301,14 +322,20 @@ function hasGameEnded() {
     gameEnded = (((Ball.centerX + Ball.radius <= 0) || (Ball.centerX - Ball.radius >= GameWindow.width)) ? true : false);
 }
 
+//function changeBarDefaultPosition
+
+
 function increaseDifficulty(player2Won) {
     if (player2Won) {
-        LeftBar.height = LeftBar.height / 100 * 75;
-        LeftBar.elem.style.height = LeftBar.height + "px";
+        LeftBar.reduceHeight(20);
+        RightBar.increaseHeight(10);
+        LeftBar.resetPosition();
+        RightBar.resetPosition();
     } else {
-
-        RightBar.height = RightBar.height / 100 * 75;
-        RightBar.elem.style.height = RightBar.height + "px";
+        RightBar.reduceHeight(20);
+        LeftBar.increaseHeight(10);
+        LeftBar.resetPosition();
+        RightBar.resetPosition();
     }
 }
 
@@ -316,6 +343,8 @@ function increaseDifficulty(player2Won) {
 
 /* ***** INITIALIZATION ***** */
 Score.reset()
+LeftBar.fullReset()
+RightBar.fullReset()
 startRound()
 
 

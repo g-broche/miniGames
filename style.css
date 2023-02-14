@@ -5,6 +5,7 @@
     --tictactoeLoop: 10s;
     --chessLoop: 5s;
     --421Loop: 5s;
+    --pongGameTransitionSpeed: calc(1/60s)
 }
 
 * {
@@ -1330,6 +1331,7 @@ button::after {
     width: 20px;
     background-color: white;
     top: 50%;
+    transition: top --pongGameTransitionSpeed linear;
 }
 
 #leftBar {
@@ -1347,6 +1349,5 @@ button::after {
     background-color: white;
     top: 50%;
     left: 50%;
-    transition: left 0.01s linear;
-    transition: top 0.01s linear;
+    transition: left --pongGameTransitionSpeed linear, top --pongGameTransitionSpeed linear;
 }
