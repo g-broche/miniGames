@@ -1316,8 +1316,8 @@ button::after {
 }
 
 #pongGameWindow {
-    width: 80%;
-    height: 80%;
+    width: 90vw;
+    height: 45vw;
     position: relative;
     background-color: black;
 }
@@ -1350,4 +1350,9 @@ button::after {
     top: 50%;
     left: 50%;
     transition: left --pongGameTransitionSpeed linear, top --pongGameTransitionSpeed linear;
+}
+
+
+.hide {
+    display: none;
 }

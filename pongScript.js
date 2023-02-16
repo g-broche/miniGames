@@ -2,16 +2,21 @@
 
 /* ***** global objects and variables ***** */
 
-// area on which the pong game is displayed
+
+/* ***** area on which the pong game is displayed and its related methods ***** */
 const GameWindow = {
     elem: document.getElementById("pongGameWindow"),
     width: document.getElementById("pongGameWindow").offsetWidth,
     height: document.getElementById("pongGameWindow").offsetHeight,
 };
 
-// vertical movement of bars
-const barMoveIncrementPercent = 1;
-let barMovementValue = GameWindow.height / 100 * barMoveIncrementPercent;
+
+GameWindow.calculateNewArenaSize = function () {
+    this.width = this.elem.offsetWidth;
+    this.height = this.elem.offsetHeight;
+};
+
+window.addEventListener("resize", initializeAllElements);
 
 //keymapping (CURRENTLY NOT IMPLEMENTED)
 const keyPlayer1Up = "KeyW";
@@ -20,10 +25,13 @@ const keyPlayer2Up = "ArrowUp";
 const keyPlayer2Down = "ArrowDown";
 const pause = "Space";
 
-//bar default parameters
-const defaultBarHeight = 100;
-const minBarHeight = 20;
-const defaultBarWidth = 20;
+//default parameters
+const barMoveIncrementPercent = 1;
+let barMovementValue = GameWindow.height / 100 * barMoveIncrementPercent;
+let defaultBarHeight = GameWindow.height / 10;
+let minBarHeight = GameWindow.height / 40;
+let defaultBarWidth = GameWindow.width / 50;
+let speedRatio = 200;
 
 //game booleans
 let isInitialTurn = true;
@@ -61,7 +69,7 @@ Score.reset = function () {
     this.display();
 };
 
-/* ***** Creating both bars ***** */
+/* ***** CREATING BOTH BARS ***** */
 
 //object Bar containing the methods which will be inherited by the player bars on each side
 const Bar = {
@@ -79,10 +87,12 @@ const Bar = {
         this.elem.style.top = this.defaultPositionY + "px";
     },
 
-    fullReset() { //Not implemented currently
-        this.height = defaultBarHeight;
-        this.width = defaultBarWidth;
-        this.defaultPositionY = (GameWindow.height / 2) - (defaultBarHeight / 2);
+    fullReset() {
+        this.width = GameWindow.width / 50;
+        this.height = GameWindow.height / 10;
+        this.elem.style.height = this.height + "px";
+        this.elem.style.width = this.width + "px";
+        this.defaultPositionY = (GameWindow.height / 2) - (this.height / 2);
         this.topPosition = this.defaultPositionY;
         this.elem.style.top = this.defaultPositionY + "px";
     },
@@ -90,11 +100,13 @@ const Bar = {
     increaseHeight(value) {
         this.height = (this.height + (this.height / 100 * value) < defaultBarHeight ? this.height + (this.height / 100 * value) : defaultBarHeight);
         this.elem.style.height = this.height + "px";
+        this.elem.style.width = this.width + "px";
     },
 
     reduceHeight(value) {
         this.height = (this.height - (this.height / 100 * value) > minBarHeight ? this.height - (this.height / 100 * value) : minBarHeight);
         this.elem.style.height = this.height + "px";
+        this.elem.style.width = this.width + "px";
     },
 
     moveUp() {
@@ -135,14 +147,28 @@ const Bar = {
         this.topPosition = GameWindow.height - this.height;
         this.elem.style.top = this.topPosition + "px";
     },
-};
+    moveCenter(positionY) {
+        this.topPosition = positionY - this.height / 2;
+        this.elem.style.top = this.topPosition + "px";
+    },
+    moveWithMouse(mouseCoordY) {
+        let newY = mouseCoordY - GameWindow.elem.offsetTop;
+        if (newY - this.height / 2 <= 0) {
+            this.moveMaxHeight();
+        } else if (newY - this.height / 2 > 0 && newY + this.height / 2 < GameWindow.height) {
+            this.moveCenter(newY);
+        } else {
+            this.moveMinHeight();
+        }
+    }
+}
 
 //creating the left and right bar using the methods of Bar object
 const LeftBar = Object.create(Bar);
 LeftBar.setInitialValues({
     elem: document.getElementById("leftBar"),
-    width: defaultBarWidth,
-    height: defaultBarHeight,
+    width: GameWindow.height / 10,
+    height: GameWindow.width / 50,
     defaultPositionY: (GameWindow.height / 2) - (defaultBarHeight / 2),
     topPosition: (GameWindow.height / 2) - (defaultBarHeight / 2),
 });
@@ -150,29 +176,43 @@ LeftBar.setInitialValues({
 const RightBar = Object.create(Bar);
 RightBar.setInitialValues({
     elem: document.getElementById("rightBar"),
-    width: defaultBarWidth,
-    height: defaultBarHeight,
+    width: GameWindow.height / 10,
+    height: GameWindow.width / 50,
     defaultPositionY: (GameWindow.height / 2) - (defaultBarHeight / 2),
     topPosition: (GameWindow.height / 2) - (defaultBarHeight / 2),
 });
 
 
-/* ***** Ball object and its related methods ***** */
+/* ***** BALL OBJECTS AND ITS RELATED METHODS ***** */
+
 const Ball = {
     elem: document.querySelector("i"),
     defaultPositionY: (GameWindow.height / 2),
     defaultPositionX: (GameWindow.width / 2),
     centerY: (GameWindow.height / 2),
     centerX: (GameWindow.width / 2),
-    radius: document.querySelector("i").offsetWidth / 2,
+    radius: (GameWindow.width / 50),
     directionX: false,
     directionY: true,
-    velocity: 5
+    velocity: (GameWindow.width / speedRatio)
+};
+
+Ball.fullReset = function () {
+    this.defaultPositionY = (GameWindow.height / 2);
+    this.defaultPositionX = (GameWindow.width / 2);
+    this.centerY = (GameWindow.height / 2);
+    this.centerX = (GameWindow.width / 2);
+    this.radius = (GameWindow.width / 100);
+    this.velocity = (GameWindow.width / speedRatio);
+    this.elem.style.height = (this.radius * 2) + "px";
+    this.elem.style.width = (this.radius * 2) + "px";
+    displayBall();
 };
 
 Ball.reset = function () {
-    this.centerX = this.defaultPositionX
-    this.centerY = this.defaultPositionY
+    this.centerX = this.defaultPositionX;
+    this.centerY = this.defaultPositionY;
+    displayBall();
 };
 Ball.toggleDirectionX = function () {
     this.directionX = (this.directionX ? false : true);
@@ -217,20 +257,36 @@ function executeInputs() {
     })
 };
 
+/* ***** MOVING RIGHT BAR WITH MOUSE ***** */
 
+function useMouseToMoveBar(mouseEvent) {
+    let posY = mouseEvent.clientY;
+    RightBar.moveWithMouse(posY)
+}
 
-/* ***** Functions related to Ball movement ***** */
-
-//updates coords properties of the ball
-function changeBallCoords(moveValue) {
-    (Ball.directionX ? (Ball.centerX += moveValue) : (Ball.centerX -= moveValue));
-    if (isInitialTurn == false) {
-        (Ball.directionY ? (Ball.centerY += moveValue) : (Ball.centerY -= moveValue));
+const throttle = (callBackFunction, delay) => {
+    let lastTime = 0;
+    return (...args) => {
+        let now = new Date().getTime();
+        if (now - lastTime < delay) return;
+        lastTime = now;
+        callBackFunction(...args)
     }
 }
 
+document.addEventListener("mousemove", throttle(useMouseToMoveBar, 1000 / 60))
+
+
+/* ***** FUNCTIONS RELATED TO BALL MOVEMENT ***** */
+
+//updates coords properties of the ball
+function changeBallCoords(moveValueX, moveValueY) {
+    Ball.centerX += moveValueX;
+    if (isInitialTurn == false) { Ball.centerY += moveValueY; }
+}
+
 //moves the ball around based on its coordinate variables
-function displayBallMovement() {
+function displayBall() {
     Ball.elem.style.top = (Ball.centerY - Ball.radius) + "px";
     Ball.elem.style.left = (Ball.centerX - Ball.radius) + "px";
 }
@@ -268,15 +324,15 @@ function redirectFromBar(bar) {
 
 //get the ball into the point of direct contact to the nearest bar (to smooth redirection), returns the distance that was necessary to close in
 function closeDistanceToBar() {
-    let distanceToReach = 0;
+    let distanceToReachX = 0;
     if (Ball.directionX) {
-        distanceToReach = RightBar.elem.offsetLeft - (Ball.centerX + Ball.radius);
+        distanceToReachX = RightBar.elem.offsetLeft - (Ball.centerX + Ball.radius);
     } else {
-        distanceToReach = (Ball.centerX - Ball.radius) - (LeftBar.elem.offsetLeft + LeftBar.width);
+        distanceToReachX = (Ball.centerX - Ball.radius) - (LeftBar.elem.offsetLeft + LeftBar.width);
     }
-    changeBallCoords(distanceToReach)
-    displayBallMovement();
-    return distanceToReach;
+    changeBallCoords(distanceToReachX, distanceToReachX / 2)
+    displayBall();
+    return distanceToReachX;
 
 }
 
@@ -287,41 +343,71 @@ function willBallHitAnyWall(moveValueY) {
 
 //get the ball into the point of direct contact to the nearest wall (to smooth redirection), returns the distance that was necessary to close in
 function closeDistanceToWall() {
-    let distanceToReach = 0;
+    let distanceToReachY = 0;
     if (Ball.directionY) {
-        distanceToReach = GameWindow.height - (Ball.centerY + Ball.radius);
+        distanceToReachY = GameWindow.height - (Ball.centerY + Ball.radius);
     } else {
-        distanceToReach = (Ball.centerY - Ball.radius)
+        distanceToReachY = (Ball.centerY - Ball.radius)
     }
-    changeBallCoords(distanceToReach)
-    displayBallMovement();
-    return distanceToReach;
+    changeBallCoords(distanceToReachY * 2, distanceToReachY)
+    displayBall();
+    return distanceToReachY;
 
 }
 
 //function handling everything related to ball movement and calculations
 function moveBall() {
-    let ballTravel = Ball.velocity; //stores the amout of movement necessary to travel during the frame animation cycle
+    let ballTravelX = Ball.velocity * 2; //stores the amout of movement necessary to travel during the frame animation cycle
+    let ballTravelY = Ball.velocity;
 
     //for as long as there is movement to do :
-    while (ballTravel > 0) {
-        let moveX = (Ball.directionX ? ballTravel : -ballTravel);   //sets value of movement to do based of movement direction
-        let moveY = (Ball.directionY ? ballTravel : -ballTravel);
-        if (willBallHitAnyBar(moveX, moveY)) {                                          //if during this move the ball will hit a bar
-            ballTravel -= closeDistanceToBar();                                         //close the distance to the bar and reduce the movement left to do during this animation cycle
+    while (ballTravelX > 0 && ballTravelY > 0) {
+        let moveX = (Ball.directionX ? ballTravelX : -ballTravelX);   //sets value of movement to do based of movement direction
+        let moveY = (Ball.directionY ? ballTravelY : -ballTravelY);
+        if (willBallHitAnyBar(moveX, moveY)) {
+            let distanceTravelledX = closeDistanceToBar()                              //if during this move the ball will hit a bar
+            ballTravelX -= distanceTravelledX;
+            ballTravelY -= distanceTravelledX / 2;                                   //close the distance to the bar and reduce the movement left to do during this animation cycle
             (Ball.directionX ? redirectFromBar(RightBar) : redirectFromBar(LeftBar))    //apply change of direction according to side hit and which part of the bar was hit
         } else if (willBallHitAnyWall(moveY) && (Ball.centerY - Ball.radius != 0)) {        //else, check if ball will hit any wall during this move
-            ballTravel -= closeDistanceToWall();                                            //close the distance to the wall and reduce the movement left to do during this animation cycle
+            let distanceTravelledY = closeDistanceToWall();                                  //close the distance to the wall and reduce the movement left to do during this cycle 
+            ballTravelX -= distanceTravelledY * 2;
+            ballTravelY -= distanceTravelledY;
+
             Ball.toggleDirectionY();                                                        //change vertical movement direction
         } else {
-            changeBallCoords(ballTravel);   //if neither previous case happened in this loop, use the totality of allocated movement to move the ball
-            displayBallMovement();
-            ballTravel = 0;
+            changeBallCoords(moveX, moveY);   //if neither previous case happened in this loop, use the totality of allocated movement to move the ball
+            displayBall();
+            ballTravelX = 0;
+            ballTravelY = 0;
         }
     }
 }
 
 /* ***** function related to game pacing and winning event ***** */
+//reset all global variable subject to change to default value, also apply proportionality of values in case of resizing
+function resetGlobalVariables() {
+    isInitialTurn = true;
+    gameEnded = false;
+    isPaused = false;
+    barMovementValue = GameWindow.height / 100 * barMoveIncrementPercent;
+    defaultBarHeight = GameWindow.height / 10;
+    minBarHeight = GameWindow.height / 40;
+    defaultBarWidth = GameWindow.width / 50;
+}
+
+
+//initialize all elements
+function initializeAllElements() {
+    resetGlobalVariables()
+    GameWindow.calculateNewArenaSize()
+    LeftBar.fullReset();
+    RightBar.fullReset();
+    Ball.fullReset();
+    Score.reset();
+    pauseGame()
+}
+
 
 //pauses the game by cancelling animationframe and turns the pressed state of the pause button to false
 function pauseGame() {
@@ -349,7 +435,7 @@ function startRound() {
     Ball.toggleDirectionX();
     isInitialTurn = true;
     gameEnded = false;
-    animateBall();
+    pauseGame();
 }
 
 //win condition
@@ -384,9 +470,8 @@ function animateBall() {
 }
 
 /* ***** INITIALIZATION ***** */
-Score.reset()
-LeftBar.fullReset()
-RightBar.fullReset()
-startRound()
+//GameWindow.resize();
+initializeAllElements();
+startRound();
 
 
