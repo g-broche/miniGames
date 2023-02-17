@@ -18,31 +18,65 @@ GameWindow.calculateNewArenaSize = function () {
 
 window.addEventListener("resize", initializeAllElements);
 
-//keymapping (CURRENTLY NOT IMPLEMENTED)
-const keyPlayer1Up = "KeyW";
-const keyPlayer1Down = "KeyS";
-const keyPlayer2Up = "ArrowUp";
-const keyPlayer2Down = "ArrowDown";
-const pause = "Space";
-
-//default parameters
-const barMoveIncrementPercent = 1;
+/* ***** Global variables ***** */
+const pointsToWin =5;
+const barMoveIncrementPercent = 2;
 let barMovementValue = GameWindow.height / 100 * barMoveIncrementPercent;
 let defaultBarHeight = GameWindow.height / 10;
-let minBarHeight = GameWindow.height / 40;
+let minBarHeight = GameWindow.height / 15;
 let defaultBarWidth = GameWindow.width / 50;
-let speedRatio = 200;
+let speedRatio = 400;
 
 //game booleans
 let isInitialTurn = true;
-let gameEnded = false;
+let roundEnded = false;
 let isPaused = false;
+let gameEnded = false;
 
 //id of current animation frame
 let requestAnimationId;
 
-/* ***** Creating object score handling the score of each player and the related methods ***** */
 
+/* ***** Modal window and overlay use to end the match and show the winner and their related methods ***** */
+
+const ModalMenu = {
+    window: document.getElementById("modalWrapper"),
+    buttonClose: document.getElementById("closeWindow"),
+    buttonRestart: document.getElementById("buttonStartNewMatch"), 
+    title : document.getElementById("winnerTitle"),
+    msg : document.getElementById("MatchEndMsg")
+};
+
+//display or hide modal window and its content
+ModalMenu.toggleVisibility =function(mustDisplay){
+    if(mustDisplay){
+    this.window.classList.add("flex");
+    this.window.classList.remove("hide");
+    }else{
+        this.window.classList.add("hide");
+        this.window.classList.remove("flex");
+    }
+}
+
+//fill the title and span featured of the modal window based on winner and score
+ModalMenu.fillWinnerFields = function(isPlayer1Winner){;
+    this.title.textContent = (isPlayer1Winner? "Player 1 has won the match!":"Player 2 has won the match!")
+    let msgContent = (isPlayer1Winner?("The final score is "+Score.player1Points+" to "+Score.player2Points+" in favor of player 1"):("the final score is "+Score.player2Points+" to "+Score.player1Points+" in favor of player 2"));
+    this.msg.textContent = msgContent;
+}
+
+//display or hide the modal background blur overlay
+const ModalOverlay = document.getElementById("modalOverlay");
+ModalOverlay.toggleVisibility =function(mustDisplay){
+    (mustDisplay?this.classList.remove("hide"):this.classList.add("hide"));
+}
+
+//event listeners to close the modal overlay and restart a match
+ModalMenu.buttonRestart.addEventListener("click", restart);
+ModalMenu.buttonClose.addEventListener("click", restart);
+ModalOverlay.addEventListener("click", restart);
+
+/* ***** Creating object Score which handles the score of each player and the related methods ***** */
 const Score = {
     player1Field: document.getElementById("scorePlayer1"),
     player1Points: 0,
@@ -62,12 +96,28 @@ Score.update = function (winnerBool) {
     this.display();
 };
 
-//reset score (CURRENTLY NOT IMPLEMENTED)
+//reset score
 Score.reset = function () {
     this.player1Points = 0;
     this.player2Points = 0;
     this.display();
 };
+
+//check if the number of points required to end a match is reached
+Score.hasMatchEnded = function(){
+    gameEnded = (this.player1Points >= pointsToWin || this.player2Points >= pointsToWin)
+}
+
+Score.decideWinner =function(){
+    return this.player1Points>this.player2Points
+}
+
+//end the match by enabling the modal window and overlay
+Score.endMatch = function(){
+        ModalMenu.fillWinnerFields(this.decideWinner());
+        ModalMenu.toggleVisibility(gameEnded)
+        ModalOverlay.toggleVisibility(gameEnded)
+}
 
 /* ***** CREATING BOTH BARS ***** */
 
@@ -194,7 +244,9 @@ const Ball = {
     radius: (GameWindow.width / 50),
     directionX: false,
     directionY: true,
-    velocity: (GameWindow.width / speedRatio)
+    velocity: (GameWindow.width / speedRatio),
+    velocityMultiplierX: 1,
+    velocityMultiplierY: 1
 };
 
 Ball.fullReset = function () {
@@ -204,14 +256,20 @@ Ball.fullReset = function () {
     this.centerX = (GameWindow.width / 2);
     this.radius = (GameWindow.width / 100);
     this.velocity = (GameWindow.width / speedRatio);
+    this.velocityMultiplierX=2;
+    this.velocityMultiplierY=1;
+    this.directionX=false;
     this.elem.style.height = (this.radius * 2) + "px";
     this.elem.style.width = (this.radius * 2) + "px";
+    this.elem.style.borderRadius = (this.radius * 2) + "px";
     displayBall();
 };
 
 Ball.reset = function () {
     this.centerX = this.defaultPositionX;
     this.centerY = this.defaultPositionY;
+    this.velocityMultiplierX=2;
+    this.velocityMultiplierY=1;
     displayBall();
 };
 Ball.toggleDirectionX = function () {
@@ -221,6 +279,12 @@ Ball.toggleDirectionX = function () {
 Ball.toggleDirectionY = function () {
     this.directionY = (this.directionY ? false : true);
 };
+
+Ball.changeSpeedMupltipliers = function (newValueX, newValueY) {
+    this.velocityMultiplierX = newValueX;
+    this.velocityMultiplierY = newValueY;
+
+}
 
 /* ***** HANDLING OF PLAYER INPUTS ***** */
 
@@ -260,10 +324,13 @@ function executeInputs() {
 /* ***** MOVING RIGHT BAR WITH MOUSE ***** */
 
 function useMouseToMoveBar(mouseEvent) {
-    let posY = mouseEvent.clientY;
-    RightBar.moveWithMouse(posY)
+    if (!isPaused) {
+        let posY = mouseEvent.clientY;
+        RightBar.moveWithMouse(posY)
+    }
 }
 
+//reduce callBackFunction firing frequency based on delay
 const throttle = (callBackFunction, delay) => {
     let lastTime = 0;
     return (...args) => {
@@ -313,11 +380,41 @@ function willBallHitAnyBar(moveValueX, moveValueY) {
     return willBallHitRightBar(moveValueX, moveValueY) || willBallHitLeftBar(moveValueX, moveValueY);
 }
 
+//calculate percent of height of the bar that was hit by the ball
+function calculateCollisionBarArea(bar) {
+    return ((Ball.centerY - bar.topPosition) / bar.height) * 100;
+}
+
+function calculateNewMultipliers(ratio) {
+
+    if ((ratio <= 5) || (ratio >= 95)) {
+        Ball.velocityMultiplierX = 2;
+        Ball.velocityMultiplierY = 4;
+    } else if ((ratio > 5 && ratio <= 20) || (ratio >= 80 && ratio < 95)) {
+        Ball.velocityMultiplierX = 3.5;
+        Ball.velocityMultiplierY = 2; 
+    } else if ((ratio > 20 && ratio <= 35) || (ratio >= 65 && ratio < 80)) {
+        Ball.velocityMultiplierX = 4;
+        Ball.velocityMultiplierY = 1.5;
+    } else if ((ratio > 35 && ratio <= 45) || (ratio >= 55 && ratio < 65)) {
+        Ball.velocityMultiplierX = 4.5;
+        Ball.velocityMultiplierY = 1;
+    } else if (ratio > 45 && ratio < 55) {
+        Ball.velocityMultiplierX = 5.5;
+        Ball.velocityMultiplierY = 0.5;
+    } else {
+        alert("invalid speed modifier")// This should not be triggered since a collision is required for this function, left here for debug purpose
+    }
+
+}
+
 //changes the ball direction depending on which half of the bar's height is hit by the ball
 function redirectFromBar(bar) {
     if (isInitialTurn) {
         isInitialTurn = false;
     }
+    let ratio = Number(calculateCollisionBarArea(bar))
+    calculateNewMultipliers(ratio);
     Ball.directionY = ((Ball.centerY <= bar.topPosition + bar.height / 2) ? false : true);
     Ball.toggleDirectionX();
 }
@@ -349,7 +446,7 @@ function closeDistanceToWall() {
     } else {
         distanceToReachY = (Ball.centerY - Ball.radius)
     }
-    changeBallCoords(distanceToReachY * 2, distanceToReachY)
+    changeBallCoords((distanceToReachY / Ball.velocityMultiplierY * Ball.velocityMultiplierX), distanceToReachY);
     displayBall();
     return distanceToReachY;
 
@@ -357,8 +454,8 @@ function closeDistanceToWall() {
 
 //function handling everything related to ball movement and calculations
 function moveBall() {
-    let ballTravelX = Ball.velocity * 2; //stores the amout of movement necessary to travel during the frame animation cycle
-    let ballTravelY = Ball.velocity;
+    let ballTravelX = Ball.velocity * Ball.velocityMultiplierX; //stores the amout of movement necessary to travel during the frame animation cycle
+    let ballTravelY = Ball.velocity * Ball.velocityMultiplierY;
 
     //for as long as there is movement to do :
     while (ballTravelX > 0 && ballTravelY > 0) {
@@ -388,6 +485,7 @@ function moveBall() {
 //reset all global variable subject to change to default value, also apply proportionality of values in case of resizing
 function resetGlobalVariables() {
     isInitialTurn = true;
+    roundEnded = false;
     gameEnded = false;
     isPaused = false;
     barMovementValue = GameWindow.height / 100 * barMoveIncrementPercent;
@@ -405,7 +503,10 @@ function initializeAllElements() {
     RightBar.fullReset();
     Ball.fullReset();
     Score.reset();
-    pauseGame()
+    ModalMenu.toggleVisibility(false);
+    ModalOverlay.toggleVisibility(false);
+    pauseGame();
+
 }
 
 
@@ -434,24 +535,29 @@ function startRound() {
     Ball.reset();
     Ball.toggleDirectionX();
     isInitialTurn = true;
-    gameEnded = false;
+    roundEnded = false;
     pauseGame();
 }
 
+function restart(){
+    initializeAllElements();
+    startRound();
+}
+
 //win condition
-function hasGameEnded() {
-    gameEnded = (((Ball.centerX + Ball.radius <= 0) || (Ball.centerX - Ball.radius >= GameWindow.width)) ? true : false);
+function hasRoundEnded() {
+    roundEnded = (((Ball.centerX + Ball.radius <= 0) || (Ball.centerX - Ball.radius >= GameWindow.width)) ? true : false);
 }
 
 //change bar properties for each player depending of if winning or losing based on a boolean arcgument (will use ballDirectionX to deternine who won)
 function increaseDifficulty(player2Won) {
     if (player2Won) {
-        LeftBar.reduceHeight(20);
-        RightBar.increaseHeight(10);
+        LeftBar.reduceHeight(10);
+        RightBar.increaseHeight(5);
 
     } else {
-        RightBar.reduceHeight(20);
-        LeftBar.increaseHeight(10);
+        RightBar.reduceHeight(10);
+        LeftBar.increaseHeight(5);
     }
 }
 
@@ -459,19 +565,23 @@ function increaseDifficulty(player2Won) {
 function animateBall() {
     executeInputs();
     moveBall();
-    hasGameEnded();
-    if (gameEnded) {
+    hasRoundEnded();
+    if (roundEnded) { 
         Score.update(Ball.directionX);
+        Score.hasMatchEnded();
+        if(gameEnded){
+            pauseGame()
+            Score.endMatch()
+        }else{
         increaseDifficulty(Ball.directionX);
         startRound();
+        }
     } else if (!isPaused) {
         requestAnimationId = window.requestAnimationFrame(animateBall);
     }
 }
 
 /* ***** INITIALIZATION ***** */
-//GameWindow.resize();
-initializeAllElements();
-startRound();
+restart()
 
 

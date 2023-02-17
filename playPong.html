@@ -26,9 +26,35 @@
 
                 <div id="rightBar" class="PongBar absolute"></div>
             </section>
+            <section>
+                <h3>Player Controls</h3>
+                <div>
+                    <h4>player 1</h4>
+                    <span>Move up : Z</span>
+                    <span>Move down : S</span>
+                </div>
+                <div>
+                    Pause/start : Spacebar
+                </div>
+                    <div>
+                        <h4>player 2</h4>
+                        <span>Move up : Up arrow</span>
+                        <span>Move down : Down arrow</span>
+                        <span>mouse control : enabled</span>
+                    </div>
+                </div>
 
+            </section>
         </section>
+
     </main>
+    <div id="modalWrapper" class="hide">
+        <button id="closeWindow">X</button>
+        <h2 id="winnerTitle"></h2>
+        <span id="MatchEndMsg"></span>
+        <button id="buttonStartNewMatch">Restart match</button>
+    </div>
+    <div id="modalOverlay" class="hide"></div>
 </body>
 <script src="pongScript.js"></script>
 
