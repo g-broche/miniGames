@@ -16,12 +16,13 @@
 
 <body>
     <header>
-        <h1>Title Placeholder</h1>
+        <h1>Online Games</h1>
         <nav>
             <ul>
-                <li><a href="">Game 1</a></li>
+                <li><a href="#pong">Pong</a></li>
                 <li><a href="">Game 2</a></li>
                 <li><a href="">Game 3</a></li>
+                <li><a href="">Game 4</a></li>
             </ul>
         </nav>
     </header>
@@ -29,14 +30,12 @@
     <main id="home">
         <section id="introContainer" class="contentBloc centered">
             <h2>Online Games</h2>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis illum quam voluptate aliquid, voluptatem
-                harum nemo natus id dolores mollitia ullam reprehenderit labore nam sed, necessitatibus laboriosam
-                molestiae iusto unde adipisci numquam possimus aut! Nisi quisquam soluta eveniet, doloribus, corrupti
-                accusantium cumque adipisci ut voluptatem modi consequuntur molestiae atque quia.</p>
-            <button>Discover available games</button>
+            <p>Projet visant à expérimenté en JS et utiliser des animations en css pour différents jeux. Pour l'heure
+                seul
+                pong est fonctionnel</p>
         </section>
         <section id="gameContainer">
-            <div class="contentBloc gamewrapper">
+            <div id="pong" class="contentBloc gamewrapper">
                 <div class="gameImageContainer">
                     <img src="Resources/pong.webp" alt="Pong">
                 </div>
@@ -49,19 +48,17 @@
                             <div></div>
                         </div>
                     </header>
-                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Similique saepe voluptates dolore
-                        error,
-                        dolorem harum magnam a quia odio tempora excepturi at quos aperiam non voluptatibus accusamus
-                        ratione
-                        consequatur maiores ipsa? Doloremque, repellendus eveniet, dolores nulla optio maiores
-                        reiciendis
-                        debitis cum cupiditate consequatur iste magnam ea, incidunt aspernatur. Accusamus, quidem?</p>
+                    <p>Projet de jeu reprenant le concept de pong. Prévu pour un seul joueur contrôlant à la fois la
+                        barre de gauche et celle de droite. La barre de droite peut être contrôlée tant par les flèches
+                        directionnelles que par la souris.
+                    </p>
                     <ul>
-                        <li>Lorem, ipsum.</li>
-                        <li>Lorem, ipsum.</li>
-                        <li>Lorem, ipsum.</li>
+                        <li>Controle via souris activé pour le second joueur (droite).</li>
+                        <li>Léger changement de la hauteur des barres selon après avoir marqué pour simuler un
+                            équilibrage.</li>
+                        <li>Possibilité de mettre le jeu en pause via la touche "Espace".</li>
                     </ul>
-                    <a href="playPong.html" target="_blank"><button>Try this game</button></a>
+                    <a href="/pong/index.html"><button>Essayer ce jeu</button></a>
                 </div>
             </div>
             <div class="contentBloc gamewrapper">
@@ -70,7 +67,7 @@
                 </div>
                 <div class="centered">
                     <header>
-                        <h2>Game 1</h2>
+                        <h2>Chess</h2>
                         <div id="gameChessAnimate">
                             <div><img src="Resources/knight.webp" alt="knightPiece"></div>
                             <div><img src="Resources/pawn.webp" alt="pawnPiece"></div>
@@ -89,7 +86,7 @@
                         <li>Lorem, ipsum.</li>
                         <li>Lorem, ipsum.</li>
                     </ul>
-                    <button>Try this game</button>
+                    <button class="placeholder">indisponible</button>
                 </div>
             </div>
             <div class="contentBloc gamewrapper">
@@ -123,7 +120,7 @@
                         <li>Lorem, ipsum.</li>
                         <li>Lorem, ipsum.</li>
                     </ul>
-                    <button>Try this game</button>
+                    <button class="placeholder">indisponible</button>
                 </div>
             </div>
             <div class="contentBloc gamewrapper">
@@ -151,7 +148,7 @@
                         <li>Lorem, ipsum.</li>
                         <li>Lorem, ipsum.</li>
                     </ul>
-                    <button>Try this game</button>
+                    <button class="placeholder">indisponible</button>
                 </div>
             </div>
 
@@ -195,5 +192,6 @@
     </main>
 
 </body>
+<script src="script.js"></script>
 
 </html>

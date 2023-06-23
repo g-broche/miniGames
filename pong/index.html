@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster+Two:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <title>Pong</title>
+</head>
+
+<body>
+    <main id="pongGame">
+        <section>
+            <h1>Pong</h1>
+            <h2><span id="scorePlayer1"></span> - <span id="scorePlayer2"></span></h2>
+            <section id="pongGameWindow">
+                <div id="leftBar" class="PongBar absolute"></div>
+
+                <i class="ball absolute"></i>
+
+                <div id="rightBar" class="PongBar absolute"></div>
+            </section>
+            <section>
+                <h3>Player Controls</h3>
+                <div>
+                    <h4>player 1</h4>
+                    <span>Move up : Z</span>
+                    <span>Move down : S</span>
+                </div>
+                <div>
+                    <h4>Pause/start : Spacebar</h4>
+                </div>
+                <div>
+                    <h4>player 2</h4>
+                    <span>Move up : Up arrow</span>
+                    <span>Move down : Down arrow</span>
+                    <span>Mouse control : enabled</span>
+                </div>
+                </div>
+
+            </section>
+        </section>
+
+    </main>
+    <div id="modalWrapper" class="hide">
+        <button id="closeWindow">X</button>
+        <h2 id="winnerTitle"></h2>
+        <span id="MatchEndMsg"></span>
+        <button id="buttonStartNewMatch">Restart match</button>
+    </div>
+    <div id="modalOverlay" class="hide"></div>
+</body>
+<script src="pongScript.js"></script>
+
+</html>
