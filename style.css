@@ -143,19 +143,19 @@ button:hover {
 }
 
 #pongAnimate div:first-child {
-    animation: pongLeft 30s linear infinite;
+    animation: pongLeft var(--pongLoop) linear infinite;
 }
 
 #pongAnimate div:last-child {
     right: 0px;
-    animation: pongRight 30s linear infinite;
+    animation: pongRight var(--pongLoop) linear infinite;
 }
 
 #pongAnimate div:nth-child(2) {
     position: absolute;
     width: var(--pongBallDiameter);
     height: var(--pongBallDiameter);
-    border-radius: 3px;
+    border-radius: calc(var(--pongBallDiameter) / 2);
     background-color: black;
     top: 4px;
     left: 100%;

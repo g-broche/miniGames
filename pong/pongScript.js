@@ -298,7 +298,7 @@ const actionLog = {
     "Space": { pressed: false, func: pauseGame },
 }
 
-//event listener for keydown, will first check if the game has to be resume and if not will update the action to execute at each frame cycle based on key triggers
+//event listener for keydown, will first check if the game has to be resumed and if not will update the action to execute at each frame cycle based on key triggers
 document.addEventListener("keydown", function (event) {
     if (event.code == "Space" && isPaused == true) {
         resumeGame()
@@ -455,26 +455,31 @@ function closeDistanceToWall() {
 
 //function handling everything related to ball movement and calculations
 function moveBall() {
-    let ballTravelX = Ball.velocity * Ball.velocityMultiplierX; //stores the amout of movement necessary to travel during the frame animation cycle
+    //stores the amout of movement necessary to travel during the frame animation cycle
+    let ballTravelX = Ball.velocity * Ball.velocityMultiplierX;
     let ballTravelY = Ball.velocity * Ball.velocityMultiplierY;
-
     //for as long as there is movement to do :
     while (ballTravelX > 0 && ballTravelY > 0) {
-        let moveX = (Ball.directionX ? ballTravelX : -ballTravelX);   //sets value of movement to do based of movement direction
+        //sets value of movement to do based of movement direction
+        let moveX = (Ball.directionX ? ballTravelX : -ballTravelX);
         let moveY = (Ball.directionY ? ballTravelY : -ballTravelY);
+        //if during this move the ball will hit a bar then close the distance to the bar and reduce the movement left to do during this animation cycle
         if (willBallHitAnyBar(moveX, moveY)) {
-            let distanceTravelledX = closeDistanceToBar()                              //if during this move the ball will hit a bar
+            let distanceTravelledX = closeDistanceToBar()
             ballTravelX -= distanceTravelledX;
-            ballTravelY -= distanceTravelledX / 2;                                   //close the distance to the bar and reduce the movement left to do during this animation cycle
-            (Ball.directionX ? redirectFromBar(RightBar) : redirectFromBar(LeftBar))    //apply change of direction according to side hit and which part of the bar was hit
-        } else if (willBallHitAnyWall(moveY) && (Ball.centerY - Ball.radius != 0)) {        //else, check if ball will hit any wall during this move
-            let distanceTravelledY = closeDistanceToWall();                                  //close the distance to the wall and reduce the movement left to do during this cycle 
+            ballTravelY -= distanceTravelledX / 2;
+            //apply change of direction according to side hit and which part of the bar was hit                         
+            (Ball.directionX ? redirectFromBar(RightBar) : redirectFromBar(LeftBar))
+            //else, check if ball will hit any wall during this move
+        } else if (willBallHitAnyWall(moveY) && (Ball.centerY - Ball.radius != 0)) {
+            //close the distance to the wall and reduce the movement left to do during this cycle       
+            let distanceTravelledY = closeDistanceToWall();
             ballTravelX -= distanceTravelledY * 2;
             ballTravelY -= distanceTravelledY;
-
-            Ball.toggleDirectionY();                                                        //change vertical movement direction
+            Ball.toggleDirectionY();
+            //if neither previous cases happened in this loop, use the totality of allocated movement to move the ball                                                    
         } else {
-            changeBallCoords(moveX, moveY);   //if neither previous case happened in this loop, use the totality of allocated movement to move the ball
+            changeBallCoords(moveX, moveY);
             displayBall();
             ballTravelX = 0;
             ballTravelY = 0;
@@ -483,6 +488,7 @@ function moveBall() {
 }
 
 /* ***** function related to game pacing and winning event ***** */
+
 //reset all global variable subject to change to default value, also apply proportionality of values in case of resizing
 function resetGlobalVariables() {
     isInitialTurn = true;
