@@ -300,13 +300,22 @@ const actionLog = {
 
 //event listener for keydown, will first check if the game has to be resumed and if not will update the action to execute at each frame cycle based on key triggers
 document.addEventListener("keydown", function (event) {
-    if (event.code == "Space" && isPaused == true) {
-        resumeGame()
-    }
-    else if (actionLog[event.code]) {
+    if (actionLog[event.code] && event.code != "Space") {
         actionLog[event.code].pressed = true;
     }
 });
+
+//disable default behaviour of spacebar scrolling the page and handle the logic behind pausing the game
+window.onkeydown = function (event) {
+    if (event.keyCode === 32) {
+        event.preventDefault()
+        if (isPaused == true) {
+            resumeGame()
+        } else {
+            actionLog["Space"].pressed = true
+        }
+    }
+};
 
 //event listener for keyup, will put the boolean value for the related key to false into the actionLog object to stop firing the corresponding function at each frame cycle 
 document.addEventListener("keyup", function (event) {
